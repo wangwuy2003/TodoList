@@ -19,20 +19,27 @@ struct ListView: View {
                                endPoint: .bottom)
                 .ignoresSafeArea()
                 
-                List {
-                    ForEach(listViewModel.items) { item in
-                        ListRowView(item: item)
-                            .onTapGesture {
-                                withAnimation(.linear) {
-                                    listViewModel.updateItem(item: item)
+                if listViewModel.items.isEmpty {
+//                    ContentUnavailableView("No items", systemImage: "heart.fill", description: Text("Add first item."))
+                    NoItemView()
+                        .transition(AnyTransition.opacity.animation(.easeIn))
+                } else {
+                    List {
+                        ForEach(listViewModel.items) { item in
+                            ListRowView(item: item)
+                                .onTapGesture {
+                                    withAnimation(.linear) {
+                                        listViewModel.updateItem(item: item)
+                                    }
                                 }
-                            }
+                        }
+                        .onDelete(perform: listViewModel.deleteItem)
+                        .onMove(perform: listViewModel.moveItem)
                     }
-                    .onDelete(perform: listViewModel.deleteItem)
-                    .onMove(perform: listViewModel.moveItem)
+                    .listStyle(PlainListStyle())
+//                    .scrollContentBackground(.hidden)
+//                    .background(Color.clear)
                 }
-                .scrollContentBackground(.hidden)
-                .background(Color.clear)
             }
             .navigationTitle("Todo List 🥙")
             .toolbar {
